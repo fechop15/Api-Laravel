@@ -24,8 +24,8 @@ class PostController extends Controller
     public function index()
     {
         //
-        if (Auth::check()){
-            return new PostCollection(Post::all()->orderBy('id', 'DESC')->paginate(5));
+        if (auth('sanctum')->check()){
+            return new PostCollection(Post::orderBy('id', 'DESC')->paginate(5));
         }else{
             return new PostCollection(Post::where('is_published', true)->orderBy('id', 'DESC')->paginate(5));
         }

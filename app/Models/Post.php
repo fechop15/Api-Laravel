@@ -25,7 +25,7 @@ class Post extends Model
 
     public function comments()
     {
-        if (Auth::check()) {
+        if (auth('sanctum')->check()) {
             return $this->hasMany(Comment::class)->orderBy('id','DESC');
         }
         return $this->hasMany(Comment::class)->where('is_published',true)->orderBy('id','DESC');

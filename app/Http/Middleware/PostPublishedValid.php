@@ -18,7 +18,7 @@ class PostPublishedValid
      */
     public function handle(Request $request, Closure $next)
     {
-        if ($request->post->is_published || Auth::check()){
+        if ($request->post->is_published || auth('sanctum')->check()){
             return $next($request);
         }
         return response(['errors' => [
