@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StorePostRequest;
+use App\Http\Requests\UpdatePostRequest;
 use App\Http\Resources\PostCollection;
 use App\Http\Resources\PostResource;
 use App\Models\Post;
@@ -45,7 +46,7 @@ class PostController extends Controller
         $post=Post::create([
             'title' => $request->title,
             'content' =>  $request['content'],
-            'slug' => Str::slug($request->data),
+            'slug' => Str::slug($request->title),
             'user_id' => auth('sanctum')->user()->id,
             'is_published' => $request->is_published??true,
         ]);
@@ -74,12 +75,23 @@ class PostController extends Controller
      * Update the specified resource in storage.
      *
      * @param \Illuminate\Http\Request $request
-     * @param int $id
+     * @param Post $post
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(UpdatePostRequest $request, Post $post)
     {
         //
+        $post->update([
+            'title' => $request->title,
+            'content' =>  $request['content'],
+            'slug' => Str::slug($request->title),
+            'user_id' => auth('sanctum')->user()->id,
+            'is_published' => $request->is_published??true,
+        ]);
+        return (new PostResource($post))
+            ->additional(['links' => [
+                'self' => url()->full(),
+            ]])->response()->setStatusCode(202);
     }
 
     /**
