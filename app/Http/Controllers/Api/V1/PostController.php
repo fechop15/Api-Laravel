@@ -3,17 +3,20 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StorePostRequest;
 use App\Http\Resources\PostCollection;
 use App\Http\Resources\PostResource;
 use App\Models\Post;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 
 class PostController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('PostPublishedValid')->except('index');
+        $this->middleware('PostPublishedValid')->only('show');
+        $this->middleware('auth:sanctum')->only(['store','update','destroy']);
     }
 
     /**
@@ -37,9 +40,19 @@ class PostController extends Controller
      * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(StorePostRequest $request)
     {
-        //
+        $post=Post::create([
+            'title' => $request->title,
+            'content' =>  $request['content'],
+            'slug' => Str::slug($request->data),
+            'user_id' => auth('sanctum')->user()->id,
+            'is_published' => $request->is_published??true,
+        ]);
+        return (new PostResource($post))
+            ->additional(['links' => [
+                'self' => url()->full(),
+            ]])->response()->setStatusCode(201);
     }
 
     /**
