@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\DestroyPostRequest;
 use App\Http\Requests\StorePostRequest;
 use App\Http\Requests\UpdatePostRequest;
 use App\Http\Resources\PostCollection;
@@ -100,8 +101,11 @@ class PostController extends Controller
      * @param int $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(DestroyPostRequest $request,Post $post)
     {
-        //
+        $post->delete();
+        return response([
+            'msg' =>'content removed successfully.',
+        ],202);
     }
 }
